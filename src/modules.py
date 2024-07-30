@@ -29,6 +29,8 @@ class BaseModule():
             otn_list = table_info['table_names_original']
             for otn in otn_list:
                 csv_path = os.path.join(os.path.join(csv_dir, f"{otn}.csv"))
+                if not os.path.exists(csv_path):
+                    continue
                 csv_dict = csv.DictReader(open(csv_path, newline='', encoding="latin1"))
                 column_info = {}
                 
@@ -36,6 +38,8 @@ class BaseModule():
                     headers = list(row.keys())
                     ocn_header = [h for h in headers if 'original_column_name' in h][0]  # remove BOM
                     ocn, cn = row[ocn_header].strip(), row['column_name']
+                    if "column_description" not in row:
+                        continue
                     column_description = row['column_description'].strip()
                     column_type = row['data_format'].strip()
                     column_name = cn if cn not in ['', ' '] else ocn
@@ -46,7 +50,7 @@ class BaseModule():
                         sql = f'''SELECT DISTINCT "{ocn}" FROM `{otn}` where "{ocn}" IS NOT NULL ORDER BY RANDOM()'''
                         cursor.execute(sql)
                         values = cursor.fetchall()
-                        if len(values) > 0 and len(values[0][0]) < 50:
+                        if len(values) > 0 and len(str(values[0][0])) < 50:
                             if len(values) <= 10:
                                 example_values = [v[0] for v in values]
                                 value_prompt[f"{db_id}|{otn}|{ocn}"] = f"all possible values are {example_values}"

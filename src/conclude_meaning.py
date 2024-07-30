@@ -13,10 +13,11 @@ def get_prompts(db_root_path, table_json):
     for i in tqdm.tqdm(range(len(table_json))):
         table_info = table_json[i]
         db_id = table_info['db_id']
-        db_path = os.path.join(db_root_path, db_id, f'{db_id}.sqlite')
+        # db_root_path = db_root_path+'/dev_databases'
+        db_path = os.path.join("bird/dev_databases", db_id, f'{db_id}.sqlite')
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-        csv_dir = os.path.join(db_root_path,db_id,'database_description')
+        csv_dir = os.path.join("bird/dev_databases",db_id,'database_description')
         otn_list = table_info['table_names_original']
         tn_list = table_info['table_names']
         for i, otn in enumerate(otn_list):
